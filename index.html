@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Leafy Greens Consumption</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Leafy Greens Consumption Over Time</h1>
+  <canvas id="greensChart"></canvas>
+
+  <script>
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1HxE4EeIyjoNGwWmBkLo-fgnAczO346mbHOGlZx0Yq99GTp6eA4QvV0UxReHMHb1dZGhXuMPne8E8/pub?output=csv";
+
+    async function fetchCSVData(url) {
+      const response = await fetch(url);
+      const text = await response.text();
+      return parseCSV(text);
+    }
+
+    function parseCSV(csvText) {
+      const lines = csvText.trim().split("\n");
+      const headers = lines[0].split(",");
+      const data = lines.slice(1).map(line => {
+        const [date, robbie, ed] = line.split(",");
+        return {
+          date: new Date(date),
+          robbie: parseFloat(robbie),
+          ed: parseFloat(ed)
+        };
+      });
+      return data;
+    }
+
+    function createChart(data) {
+      const ctx = document.getElementById('greensChart').getContext('2d');
+
+      const robbieData = data.map(d => ({ x: d.date, y: d.robbie }));
+      const edData = data.map(d => ({ x: d.date, y: d.ed }));
+
+      new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [
+            {
+              label: 'Robbie',
+              data: robbieData,
+              backgroundColor: 'rgba(0, 200, 255, 0.8)',
+            },
+            {
+              label: 'Ed',
+              data: edData,
+              backgroundColor: 'rgba(100, 255, 100, 0.8)',
+            }
+          ]
+        },
+        options: {
+          plugins: {
+            legend: {
+              labels: {
+                color: '#fff'
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'day'
+              },
+              title: {
+                display: true,
+                text: 'Date',
+                color: '#ffffff'
+              },
+              ticks: {
+                color: '#ffffff'
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Leafy Greens (lbs)',
+                color: '#ffffff'
+              },
+              ticks: {
+                color: '#ffffff'
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    fetchCSVData(SHEET_URL).then(createChart);
+  </script>
+</body>
+</html>
