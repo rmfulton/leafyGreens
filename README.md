@@ -1,2 +1,4 @@
 ## Running locally:
--`sh python -m http.server 8000` 
+```sh 
+python -m http.server 8000
+```
