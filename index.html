@@ -35,11 +35,12 @@
       const lines = csvText.trim().split("\n");
       const headers = lines[0].split(",");
       const data = lines.slice(1).map(line => {
-        const [date, robbie, ed] = line.split(",");
+        const [date, robbie, ed, mom] = line.split(",");
         return {
           date: new Date(date),
           robbie: parseFloat(robbie),
-          ed: parseFloat(ed)
+          ed: parseFloat(ed),
+          mom: parseFloat(mom)
         };
       });
       return data;
@@ -50,6 +51,7 @@
 
       const robbieData = data.map(d => ({ x: d.date, y: d.robbie }));
       const edData = data.map(d => ({ x: d.date, y: d.ed }));
+      const momData = data.map(d => ({ x: d.date, y: d.mom }));
 
       new Chart(ctx, {
         type: 'scatter',
@@ -64,7 +66,13 @@
               label: 'Ed',
               data: edData,
               backgroundColor: 'rgba(100, 255, 100, 0.8)',
+            },
+            {
+              label: 'mom',
+              data: edData,
+              backgroundColor: 'rgba(100, 255, 100, 0.8)',
             }
+
           ]
         },
         options: {
